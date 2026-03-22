@@ -44,7 +44,8 @@ public class Repl
 
             if (input.StartsWith("."))
             {
-                _outputStream.Write("Unknown command: " + input);
+                _outputStream.WriteLine("Unknown command: " + input);
+                continue;
             }
 
             _outputStream.Write("Executing: " + input);
