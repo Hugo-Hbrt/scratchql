@@ -20,4 +20,8 @@
     <Using Include="NUnit.Framework" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\scratchql.Core\scratchql.Core.csproj" />
+  </ItemGroup>
+
 </Project>
