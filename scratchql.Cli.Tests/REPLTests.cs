@@ -5,6 +5,7 @@ namespace scratchql.Cli.Tests;
 
 public class REPLTests
 {
+    private const string ReplCommandPrompt = CLIConfig.databaseName + "> ";
     [SetUp]
     public void Setup()
     {
@@ -21,7 +22,7 @@ public class REPLTests
         var (sut, output) = ReplFactory.WithInput("");
 
         sut.Run();
-        Assert.That(output.ToString(), Is.EqualTo(CLIConfig.databaseName + ">"));
+        Assert.That(output.ToString(), Is.EqualTo(ReplCommandPrompt));
     }
 
     [Test]
@@ -41,7 +42,7 @@ public class REPLTests
 
         sut.Run();
 
-        Assert.That(output.ToString(), Is.EqualTo(CLIConfig.databaseName + ">" + "\n" + CLIConfig.databaseName + ">"));
+        Assert.That(output.ToString(), Is.EqualTo(ReplCommandPrompt + "\n" + ReplCommandPrompt));
     }
 
     [Test]
@@ -53,6 +54,56 @@ public class REPLTests
         sut.Run();
         Assert.That(sut.State, Is.EqualTo(eReplState.ExitRequested));
     }
+
+    [Test]
+    public void ExitCommandExits()
+    {
+        var quitCommand = ".exit\n";
+        var (sut, _) = ReplFactory.WithInput(quitCommand);
+
+        sut.Run();
+        Assert.That(sut.State, Is.EqualTo(eReplState.ExitRequested));
+    }
+
+    [Test]
+    public void UnknownMetaCommandPrintsError()
+    {
+        var unknownCommand = ".foobar\n";
+        var (sut, output) = ReplFactory.WithInput(unknownCommand);
+
+        sut.Run();
+        var outputString = output.ToString();
+
+        Assert.That(outputString!.StartsWith(ReplCommandPrompt + "Unknown command: " + unknownCommand));
+    }
+
+    [Test]
+    public void HelpPrintsHelpOutput()
+    {
+        var helpCommand = ".help\n";
+        var (sut, output) = ReplFactory.WithInput(helpCommand);
+
+        sut.Run();
+        var outputString = output.ToString();
+
+        Assert.That(outputString!.Contains(".quit"));
+        Assert.That(outputString!.Contains(".exit"));
+        Assert.That(outputString!.Contains(".help"));
+    }
+
+    [Test]
+    public void NonMetaInputEchoesAsSQLExecution()
+    {
+        var anyCommand = "SELECT * FROM Table1\n";
+
+        var (sut, output) = ReplFactory.WithInput(anyCommand);
+
+        sut.Run();
+
+        var outputString = output.ToString();
+        Assert.That(outputString!.Contains("Executing: " + anyCommand));
+    }
+
 
     internal class ReplFactory
     {
