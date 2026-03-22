@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "scratchql.Cli", "scratchql.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "scratchql.Cli.Tests", "scratchql.Cli.Tests\scratchql.Cli.Tests.csproj", "{F0E0A520-E92E-4EFD-A05A-030A2616498C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "scratchql.Core.Tests", "scratchql.Core.Tests\scratchql.Core.Tests.csproj", "{AD7E6B41-43A0-447B-A746-979518FC00DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{F0E0A520-E92E-4EFD-A05A-030A2616498C}.Release|x64.Build.0 = Release|Any CPU
 		{F0E0A520-E92E-4EFD-A05A-030A2616498C}.Release|x86.ActiveCfg = Release|Any CPU
 		{F0E0A520-E92E-4EFD-A05A-030A2616498C}.Release|x86.Build.0 = Release|Any CPU
+		{AD7E6B41-43A0-447B-A746-979518FC00DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD7E6B41-43A0-447B-A746-979518FC00DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD7E6B41-43A0-447B-A746-979518FC00DB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AD7E6B41-43A0-447B-A746-979518FC00DB}.Debug|x64.Build.0 = Debug|Any CPU
+		{AD7E6B41-43A0-447B-A746-979518FC00DB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AD7E6B41-43A0-447B-A746-979518FC00DB}.Debug|x86.Build.0 = Debug|Any CPU
+		{AD7E6B41-43A0-447B-A746-979518FC00DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD7E6B41-43A0-447B-A746-979518FC00DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD7E6B41-43A0-447B-A746-979518FC00DB}.Release|x64.ActiveCfg = Release|Any CPU
+		{AD7E6B41-43A0-447B-A746-979518FC00DB}.Release|x64.Build.0 = Release|Any CPU
+		{AD7E6B41-43A0-447B-A746-979518FC00DB}.Release|x86.ActiveCfg = Release|Any CPU
+		{AD7E6B41-43A0-447B-A746-979518FC00DB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
