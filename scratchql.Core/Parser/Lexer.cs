@@ -3,6 +3,7 @@ namespace scratchql.Core.Parser;
 public class Lexer
 {
     private string _input;
+    private int _pos = 0;
     private readonly Dictionary<string, eTokenType> tokenMapper = new Dictionary<string, eTokenType>(){
             { "SELECT", eTokenType.Select},
             { "INSERT", eTokenType.Insert},
@@ -28,13 +29,42 @@ public class Lexer
     }
     public List<Token> Tokenize()
     {
-        eTokenType tokenType;
-        tokenMapper.TryGetValue(_input.Split("")[0].ToUpper(), out tokenType);
+        var tokens = new List<Token>();
+        _pos = 0;
 
-        return new List<Token>()
+        while (_pos < _input.Length - 1)
         {
-            new(tokenType, _input.Split("")[0], 1),
-            new(eTokenType.Eof, "", 2)
-        };
+            if (!char.IsWhiteSpace(_input[_pos]))
+            {
+                var token = ParseToken();
+                tokens.Add(token);
+            }
+            else
+            {
+                _pos++;
+            }
+        }
+
+        tokens.Add(new Token(eTokenType.Eof, "", _pos));
+        return tokens;
+    }
+
+    private Token ParseToken()
+    {
+        int left = _pos;
+        int length = 1;
+
+        while ((left + length) < _input.Length && !char.IsWhiteSpace(_input[left + length]))
+        {
+            length++;
+        }
+
+        var tokenSource = _input.Substring(left, length);
+
+        tokenMapper.TryGetValue(tokenSource.ToUpper(), out eTokenType tokenType);
+
+        _pos += length;
+
+        return new Token(tokenType, tokenSource, left);
     }
 }

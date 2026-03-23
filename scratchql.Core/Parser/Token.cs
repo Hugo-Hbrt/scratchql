@@ -1,3 +1,3 @@
 namespace scratchql.Core.Parser;
 
-public record Token(eTokenType type, string name, int pos);
+public record Token(eTokenType type, string source, int pos);
