@@ -74,15 +74,112 @@ public class LexerTests
             Assert.That(tokens, Is.EqualTo(expected));
         }
 
-        private static void TokenizeToTuple(string input, eTokenType expectedToken, Lexer lexer, out TokenList expected, out TokenList output)
+    }
+
+    [TestFixture]
+    public class Identifiers
+    {
+        [Test]
+        public void SimpleIdentifier()
         {
-            expected = new TokenList
+            var input = "users\n";
+
+            var lexer = new Lexer(input);
+            Token expected = new Token(eTokenType.Identifier, "users", 0);
+
+            Assert.That(lexer.Tokenize()[0], Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void IdentifierWithLeadingUnderscore()
+        {
+            var input = "_col_test\n";
+
+            var lexer = new Lexer(input);
+            Token expected = new Token(eTokenType.Identifier, "_col_test", 0);
+
+            Assert.That(lexer.Tokenize()[0], Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void IdentifierWithDigits()
+        {
+            var input = "col1\n";
+
+            var lexer = new Lexer(input);
+            Token expected = new Token(eTokenType.Identifier, "col1", 0);
+
+            Assert.That(lexer.Tokenize()[0], Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void PreservesIdentifierCase()
+        {
+            var input = "Col1SnakeCase\n";
+
+            var lexer = new Lexer(input);
+            Token expected = new Token(eTokenType.Identifier, "Col1SnakeCase", 0);
+
+            Assert.That(lexer.Tokenize()[0], Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void WordNotInKeyWordIsIdentifier()
+        {
+            var input = "BETWEEN\n";
+
+            var lexer = new Lexer(input);
+            Token expected = new Token(eTokenType.Identifier, "BETWEEN", 0);
+
+            Assert.That(lexer.Tokenize()[0], Is.EqualTo(expected));
+        }
+    }
+
+    [TestFixture]
+    public class IntegerLiterals
+    {
+        [Test]
+        public void SingleDigit()
+        {
+            var input = "1\n";
+
+            var lexer = new Lexer(input);
+            Token expected = new Token(eTokenType.IntLiteral, "1", 0);
+
+            Assert.That(lexer.Tokenize()[0], Is.EqualTo(expected));
+        }
+
+        [TestCase(42)]
+        [TestCase(122)]
+        [TestCase(9765)]
+        [TestCase(1097821)]
+        public void MultiDigit(int inputInteger)
+        {
+            var input = inputInteger.ToString() + "\n";
+
+            var lexer = new Lexer(input);
+            Token expected = new Token(eTokenType.IntLiteral, inputInteger.ToString(), 0);
+
+            Assert.That(lexer.Tokenize()[0], Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void DigitFollowedByIdentifier()
+        {
+            var input = "123abc\n";
+
+            TokenList expected = new TokenList()
             {
-                (expectedToken, input),
-                (eTokenType.Eof, "")
+                (eTokenType.IntLiteral, "123"),
+                (eTokenType.Identifier, "abc"),
+                (eTokenType.Eof, ""),
             };
 
-            output = lexer.Tokenize().Select(t => (t.type, t.source)).ToList();
+            var lexer = new Lexer(input);
+
+            TokenList output = lexer.Tokenize().Select(t => (t.type, t.source)).ToList();
+
+            Assert.That(output, Is.EqualTo(expected));
         }
     }
 
@@ -126,5 +223,15 @@ public class LexerTests
 
             Assert.That(lexer.Tokenize(), Is.EqualTo(expected));
         }
+    }
+    private static void TokenizeToTuple(string input, eTokenType expectedToken, Lexer lexer, out TokenList expected, out TokenList output)
+    {
+        expected = new TokenList
+            {
+                (expectedToken, input),
+                (eTokenType.Eof, "")
+            };
+
+        output = lexer.Tokenize().Select(t => (t.type, t.source)).ToList();
     }
 }

@@ -18,5 +18,7 @@ public enum eTokenType
     Values,
     Null,
     Set,
-    Equal
+    Equal,
+    Identifier,
+    IntLiteral
 }
