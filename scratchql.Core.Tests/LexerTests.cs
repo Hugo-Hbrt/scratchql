@@ -184,6 +184,24 @@ public class LexerTests
     }
 
     [TestFixture]
+    public class FloatLiterals
+    {
+        [TestCase("3.14")]
+        [TestCase("0.5")]
+        [TestCase("100.0")]
+        [TestCase("10293.8187325")]
+        public void CanParseFloats(string inputFloat)
+        {
+            var input = inputFloat + "\n";
+
+            var lexer = new Lexer(input);
+            Token expected = new Token(eTokenType.FloatLiteral, inputFloat, 0);
+
+            Assert.That(lexer.Tokenize()[0], Is.EqualTo(expected));
+        }
+    }
+
+    [TestFixture]
     public class PositionTracking
     {
         [Test]

@@ -65,6 +65,10 @@ public class Lexer
             {
                 tokenType = eTokenType.IntLiteral;
             }
+            else if (tokenSource.All(c => char.IsDigit(c) || c == '.'))
+            {
+                tokenType = eTokenType.FloatLiteral;
+            }
             else
             {
                 tokenType = eTokenType.Identifier;
@@ -105,7 +109,7 @@ public class Lexer
 
     private int DelimitNumber(int left, int length)
     {
-        while ((left + length) < _input.Length && char.IsDigit(_input[left + length]))
+        while ((left + length) < _input.Length && (char.IsDigit(_input[left + length]) || _input[left + length] == '.'))
         {
             length++;
         }
