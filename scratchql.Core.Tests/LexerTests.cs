@@ -225,6 +225,28 @@ public class LexerTests
 
             Assert.That(lexer.Tokenize()[0], Is.EqualTo(expected));
         }
+
+        [Test]
+        public void CanParseEmptyStringLiteral()
+        {
+            var input = "''\n";
+
+            var lexer = new Lexer(input);
+            Token expected = new Token(eTokenType.StringLiteral, "''", 0);
+
+            Assert.That(lexer.Tokenize()[0], Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void CanParseSingleEscapedQuote()
+        {
+            var input = "''''\n";
+
+            var lexer = new Lexer(input);
+            Token expected = new Token(eTokenType.StringLiteral, "'''", 0);
+
+            Assert.That(lexer.Tokenize()[0], Is.EqualTo(expected));
+        }
     }
 
     [TestFixture]
