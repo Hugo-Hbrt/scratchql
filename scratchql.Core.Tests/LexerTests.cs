@@ -216,6 +216,17 @@ public class LexerTests
         }
 
         [Test]
+        public void PreserveWhitespace()
+        {
+            var input = "'hello world'\n";
+
+            var lexer = new Lexer(input);
+            Token expected = new Token(eTokenType.StringLiteral, "'hello world'", 0);
+
+            Assert.That(lexer.Tokenize()[0], Is.EqualTo(expected));
+        }
+
+        [Test]
         public void CanParseEscapedQuote()
         {
             var input = "'it''s'\n";
