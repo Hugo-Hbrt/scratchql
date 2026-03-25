@@ -21,5 +21,6 @@ public enum eTokenType
     Equal,
     Identifier,
     IntLiteral,
-    FloatLiteral
+    FloatLiteral,
+    StringLiteral
 }

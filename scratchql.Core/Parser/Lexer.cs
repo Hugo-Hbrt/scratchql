@@ -4,6 +4,7 @@ namespace scratchql.Core.Parser;
 
 public class Lexer
 {
+    private const char StringDelimiter = '\'';
     private string _input;
     private int _pos = 0;
     private readonly Dictionary<string, eTokenType> tokenMapper = new Dictionary<string, eTokenType>(){
@@ -69,11 +70,14 @@ public class Lexer
             {
                 tokenType = eTokenType.FloatLiteral;
             }
+            else if (tokenSource.StartsWith(StringDelimiter))
+            {
+                tokenType = eTokenType.StringLiteral;
+            }
             else
             {
                 tokenType = eTokenType.Identifier;
             }
-
         }
 
         return new Token(tokenType, tokenSource, left);
@@ -87,6 +91,12 @@ public class Lexer
         {
             length = DelimitNumber(left, length);
         }
+        else if (firstChar == StringDelimiter)
+        {
+            var (token, tokenLength) = DelimitLiteral(left, length);
+            _pos += tokenLength;
+            return token;
+        }
         else
         {
             length = DelimitToken(left, length);
@@ -97,9 +107,63 @@ public class Lexer
         return _input.Substring(left, length);
     }
 
+    private (string, int) DelimitLiteral(int left, int length)
+    {
+        string token = "";
+
+        while (IsInInputLimit(left + length))
+        {
+            char c = _input[left + length];
+
+            if (IsQuote(c))
+            {
+                if (IsEscaping(left + length))
+                {
+                    token += c;
+
+                    // Skip this quote
+                    length += 2;
+                    continue;
+                }
+
+                length += 2;
+            }
+            else
+            {
+                token += c;
+
+                length++;
+                continue;
+            }
+        }
+
+        return (StringDelimiter + token + StringDelimiter, length);
+    }
+
+    private bool IsEscaping(int charIndex)
+    {
+        if (charIndex >= _input.Length - 1)
+        {
+            return false;
+        }
+
+        var nextChar = _input[charIndex + 1];
+        return nextChar == StringDelimiter;
+    }
+
+    private bool IsQuote(char c)
+    {
+        return c == StringDelimiter;
+    }
+
+    private bool IsInInputLimit(int index)
+    {
+        return index < _input.Length;
+    }
+
     private int DelimitToken(int left, int length)
     {
-        while ((left + length) < _input.Length && !char.IsWhiteSpace(_input[left + length]))
+        while (IsInInputLimit(left + length) && !char.IsWhiteSpace(_input[left + length]))
         {
             length++;
         }
@@ -109,7 +173,7 @@ public class Lexer
 
     private int DelimitNumber(int left, int length)
     {
-        while ((left + length) < _input.Length && (char.IsDigit(_input[left + length]) || _input[left + length] == '.'))
+        while (IsInInputLimit(left + length) && (char.IsDigit(_input[left + length]) || _input[left + length] == '.'))
         {
             length++;
         }

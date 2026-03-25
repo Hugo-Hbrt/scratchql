@@ -202,6 +202,32 @@ public class LexerTests
     }
 
     [TestFixture]
+    public class StringLitetals
+    {
+        [Test]
+        public void ClassicSingleQuote()
+        {
+            var input = "'hello'\n";
+
+            var lexer = new Lexer(input);
+            Token expected = new Token(eTokenType.StringLiteral, "'hello'", 0);
+
+            Assert.That(lexer.Tokenize()[0], Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void CanParseEscapedQuote()
+        {
+            var input = "'it''s'\n";
+
+            var lexer = new Lexer(input);
+            Token expected = new Token(eTokenType.StringLiteral, "'it's'", 0);
+
+            Assert.That(lexer.Tokenize()[0], Is.EqualTo(expected));
+        }
+    }
+
+    [TestFixture]
     public class PositionTracking
     {
         [Test]
