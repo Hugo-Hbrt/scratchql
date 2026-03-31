@@ -261,6 +261,104 @@ public class LexerTests
     }
 
     [TestFixture]
+    public class SingleCharOperators
+    {
+        [TestCase("=", eTokenType.Equal)]
+        [TestCase("<", eTokenType.LessThan)]
+        [TestCase(">", eTokenType.GreaterThan)]
+        [TestCase("+", eTokenType.Plus)]
+        [TestCase("-", eTokenType.Minus)]
+        [TestCase("/", eTokenType.Slash)]
+        public void CanParseOperators(string input, eTokenType expectedType)
+        {
+            var lexer = new Lexer(input + "\n");
+
+            Token expected = new Token(expectedType, input, 0);
+
+            Assert.That(lexer.Tokenize()[0], Is.EqualTo(expected));
+        }
+    }
+
+    [TestFixture]
+    public class TwoCharOperators
+    {
+        [TestCase("!=", eTokenType.NotEquals)]
+        [TestCase("<=", eTokenType.LessThanOrEqual)]
+        [TestCase(">=", eTokenType.GreaterThanOrEqual)]
+        [TestCase("<>", eTokenType.NotEquals)]
+        public void CanParseOperators(string input, eTokenType expectedType)
+        {
+            var lexer = new Lexer(input + "\n");
+
+            Token expected = new Token(expectedType, input, 0);
+
+            Assert.That(lexer.Tokenize()[0], Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void ExclamationMarkAloneIsUnknown()
+        {
+            var lexer = new Lexer("!\n");
+
+            Token expected = new Token(eTokenType.Unknown, "!", 0);
+
+            Assert.That(lexer.Tokenize()[0], Is.EqualTo(expected));
+        }
+    }
+
+    [TestFixture]
+    public class Star
+    {
+        [Test]
+        public void CanParseStar()
+        {
+            var input = "SELECT *\n";
+            var lexer = new Lexer(input);
+
+            List<Token> expected = new List<Token>();
+            expected.Add(new Token(eTokenType.Select, "SELECT", 0));
+            expected.Add(new Token(eTokenType.Star, "*", 7));
+            expected.Add(new Token(eTokenType.Eof, "", 8));
+            Assert.That(lexer.Tokenize(), Is.EqualTo(expected));
+        }
+    }
+
+    [TestFixture]
+    public class Punctuation
+    {
+        [TestCase(",", eTokenType.Comma)]
+        [TestCase(";", eTokenType.Semicolon)]
+        [TestCase("(", eTokenType.LeftParen)]
+        [TestCase(")", eTokenType.RightParen)]
+        public void CanParsePunctuation(string input, eTokenType expectedToken)
+        {
+            var lexer = new Lexer(input + "\n");
+
+            List<Token> expected = [new Token(expectedToken, input, 0), new Token(eTokenType.Eof, "", input.Length)];
+
+            Assert.That(lexer.Tokenize(), Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void CanParseMultipleTokensWithPunctuation()
+        {
+            var input = "(id,name)";
+            var lexer = new Lexer(input + "\n");
+
+            List<Token> expected =
+            [
+                new Token(eTokenType.LeftParen, "(", 0),
+                new Token(eTokenType.Identifier, "id", 1),
+                new Token(eTokenType.Comma, ",", 3),
+                new Token(eTokenType.Identifier, "name", 4),
+                new Token(eTokenType.RightParen, ")", 8),
+                new Token(eTokenType.Eof, "", input.Length),
+            ];
+
+            Assert.That(lexer.Tokenize(), Is.EqualTo(expected));
+        }
+    }
+    [TestFixture]
     public class PositionTracking
     {
         [Test]

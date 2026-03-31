@@ -22,5 +22,19 @@ public enum eTokenType
     Identifier,
     IntLiteral,
     FloatLiteral,
-    StringLiteral
+    StringLiteral,
+    LessThan,
+    GreaterThan,
+    Plus,
+    Minus,
+    Slash,
+    LessThanOrEqual,
+    GreaterThanOrEqual,
+    NotEquals,
+    Unknown,
+    Star,
+    Comma,
+    Semicolon,
+    LeftParen,
+    RightParen
 }

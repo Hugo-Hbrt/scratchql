@@ -23,7 +23,22 @@ public class Lexer
             { "INTO", eTokenType.Into},
             { "VALUES", eTokenType.Values},
             { "NULL", eTokenType.Null},
-            { "SET", eTokenType.Set}
+            { "SET", eTokenType.Set},
+            { "=", eTokenType.Equal},
+            { "<", eTokenType.LessThan},
+            { ">", eTokenType.GreaterThan},
+            { "+", eTokenType.Plus},
+            { "-", eTokenType.Minus},
+            { "/", eTokenType.Slash},
+            { "!=", eTokenType.NotEquals},
+            { "<=", eTokenType.LessThanOrEqual},
+            { ">=", eTokenType.GreaterThanOrEqual},
+            { "<>", eTokenType.NotEquals},
+            { "*", eTokenType.Star},
+            { ",", eTokenType.Comma},
+            { ";", eTokenType.Semicolon},
+            { "(", eTokenType.LeftParen},
+            { ")", eTokenType.RightParen},
         };
 
     public Lexer(string input)
@@ -59,28 +74,57 @@ public class Lexer
         int length = 1;
 
         var tokenSource = ExtractToken(left, length);
-
-        if (!tokenMapper.TryGetValue(tokenSource.ToUpper(), out eTokenType tokenType))
+        eTokenType tokenType;
+        if (!IsCommonToken(tokenSource, out tokenType))
         {
-            if (tokenSource.All(c => char.IsDigit(c)))
+            if (IsIntLiteral(tokenSource))
             {
                 tokenType = eTokenType.IntLiteral;
             }
-            else if (tokenSource.All(c => char.IsDigit(c) || c == '.'))
+            else if (IsFloatLiteral(tokenSource))
             {
                 tokenType = eTokenType.FloatLiteral;
             }
-            else if (tokenSource.StartsWith(StringDelimiter))
+            else if (IsStringLiteral(tokenSource))
             {
                 tokenType = eTokenType.StringLiteral;
             }
-            else
+            else if (IsIdentifier(tokenSource))
             {
                 tokenType = eTokenType.Identifier;
+            }
+            else
+            {
+                tokenType = eTokenType.Unknown;
             }
         }
 
         return new Token(tokenType, tokenSource, left);
+    }
+
+    private bool IsCommonToken(string tokenSource, out eTokenType tokenType)
+    {
+        return tokenMapper.TryGetValue(tokenSource.ToUpper(), out tokenType);
+    }
+
+    private static bool IsIntLiteral(string tokenSource)
+    {
+        return tokenSource.All(c => char.IsDigit(c));
+    }
+
+    private static bool IsFloatLiteral(string tokenSource)
+    {
+        return tokenSource.All(c => char.IsDigit(c) || c == '.');
+    }
+
+    private static bool IsStringLiteral(string tokenSource)
+    {
+        return tokenSource.StartsWith(StringDelimiter);
+    }
+
+    private static bool IsIdentifier(string tokenSource)
+    {
+        return char.IsAsciiLetter(tokenSource.First()) || tokenSource.First() == '_';
     }
 
     private string ExtractToken(int left, int length)
@@ -96,6 +140,12 @@ public class Lexer
             var (token, tokenLength) = DelimitLiteral(left, length);
             _pos += tokenLength;
             return token;
+        }
+        else if (IsPunctuation(firstChar))
+        {
+            length = 1;
+            _pos += 1;
+            return firstChar.ToString();
         }
         else
         {
@@ -113,8 +163,7 @@ public class Lexer
 
         while (IsInInputLimit(left + length))
         {
-            char c = _input[left + length];
-
+            var c = _input[left + length];
             if (IsQuote(c))
             {
                 if (IsEscaping(left + length))
@@ -163,12 +212,17 @@ public class Lexer
 
     private int DelimitToken(int left, int length)
     {
-        while (IsInInputLimit(left + length) && !char.IsWhiteSpace(_input[left + length]))
+        while (IsInInputLimit(left + length) && !char.IsWhiteSpace(_input[left + length]) && !IsPunctuation(_input[left + length]))
         {
             length++;
         }
 
         return length;
+    }
+
+    private bool IsPunctuation(char c)
+    {
+        return "(,;)".Contains(c);
     }
 
     private int DelimitNumber(int left, int length)
